@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { resolveStateDir } from "@/lib/clawdbot/paths";
 import { isLikelyLocalGatewayUrl } from "@/lib/gateway/local-gateway";
 import {
   resolveConfiguredSshTarget,
@@ -53,7 +54,7 @@ const resolveAndValidateLocalMediaPath = (raw: string): { resolved: string; mime
 
   const resolved = path.resolve(expanded);
 
-  const allowedRoot = path.join(os.homedir(), ".openclaw");
+  const allowedRoot = path.resolve(resolveStateDir());
   const allowedPrefix = `${allowedRoot}${path.sep}`;
   if (!(resolved === allowedRoot || resolved.startsWith(allowedPrefix))) {
     throw new Error(`Refusing to read media outside ${allowedRoot}`);
@@ -189,7 +190,7 @@ export async function GET(request: Request) {
 
     if (!sshTarget) {
       const { resolved, mime } = resolveAndValidateLocalMediaPath(rawPath);
-      const allowedRoot = path.join(os.homedir(), ".openclaw");
+      const allowedRoot = path.resolve(resolveStateDir());
       const { bytes, size } = await readLocalMedia(resolved, allowedRoot);
       const body = new Blob([Uint8Array.from(bytes)], { type: mime });
       return new Response(body, {
