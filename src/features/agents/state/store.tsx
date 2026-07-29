@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import type { AgentAvatarProfile } from "@/lib/avatars/profile";
+import type { HelpharmaAgentRole, HelpharmaAgentRoleResolution } from "@/lib/helpharma/agent-roles";
 import {
   areTranscriptEntriesEqual,
   buildOutputLinesFromTranscriptEntries,
@@ -30,6 +31,8 @@ export type AgentStoreSeed = {
   identityName?: string | null;
   sessionDisplayName?: string | null;
   role?: string | null;
+  helpharmaRole?: HelpharmaAgentRole;
+  helpharmaRoleSource?: HelpharmaAgentRoleResolution["source"];
   sessionKey: string;
   avatarSeed?: string | null;
   avatarProfile?: AgentAvatarProfile | null;

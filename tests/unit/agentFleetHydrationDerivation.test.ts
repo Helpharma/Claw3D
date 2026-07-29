@@ -165,4 +165,39 @@ describe("deriveHydrateAgentFleetResult", () => {
     expect(result.summaryPatches.length).toBeGreaterThan(0);
     expect(result.suggestedSelectedAgentId).toBe("agent-2");
   });
+
+  it("derives_helpharma_roles_from_names_and_runtime_roles", () => {
+    const result = deriveHydrateAgentFleetResult({
+      gatewayUrl: "ws://localhost:18789",
+      configSnapshot: null,
+      settings: null,
+      execApprovalsSnapshot: null,
+      agentsResult: {
+        defaultId: "celinha",
+        mainKey: "main",
+        agents: [
+          { id: "celinha", name: "Celinha", identity: {} },
+          { id: "fiscal", name: "Fiscal", role: "specialist", identity: {} },
+        ],
+      },
+      mainSessionByAgentId: new Map(),
+      statusSummary: null,
+      previewResult: null,
+    });
+
+    expect(result.seeds[0]).toEqual(
+      expect.objectContaining({
+        agentId: "celinha",
+        helpharmaRole: "orchestrator",
+        helpharmaRoleSource: "name",
+      }),
+    );
+    expect(result.seeds[1]).toEqual(
+      expect.objectContaining({
+        agentId: "fiscal",
+        helpharmaRole: "worker",
+        helpharmaRoleSource: "runtime_role",
+      }),
+    );
+  });
 });

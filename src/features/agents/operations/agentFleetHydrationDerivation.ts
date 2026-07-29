@@ -2,6 +2,10 @@ import { buildAgentMainSessionKey } from "@/lib/gateway/GatewayClient";
 import { createDefaultAgentAvatarProfile } from "@/lib/avatars/profile";
 import { resolveConfiguredModelKey, type GatewayModelPolicySnapshot } from "@/lib/gateway/models";
 import {
+  buildHelpharmaAgentRoleConfigFromEnv,
+  resolveHelpharmaAgentRole,
+} from "@/lib/helpharma/agent-roles";
+import {
   resolveAgentAvatarProfile,
   resolveAgentAvatarSeed,
   type StudioSettings,
@@ -213,6 +217,7 @@ export const deriveHydrateAgentFleetResult = (
 
   const mainKey = input.agentsResult.mainKey?.trim() || "main";
   const gatewayKey = input.gatewayUrl.trim();
+  const helpharmaRoleConfig = buildHelpharmaAgentRoleConfigFromEnv();
 
   const needsSessionSettingsSync = new Set<string>();
   const seeds: AgentStoreSeed[] = input.agentsResult.agents.map((agent) => {
@@ -242,6 +247,17 @@ export const deriveHydrateAgentFleetResult = (
     const sessionExecHost = normalizeExecHost(mainSession?.execHost);
     const sessionExecSecurity = normalizeExecSecurity(mainSession?.execSecurity);
     const sessionExecAsk = normalizeExecAsk(mainSession?.execAsk);
+    const helpharmaRoleResolution = resolveHelpharmaAgentRole(
+      {
+        agentId: agent.id,
+        name,
+        runtimeName,
+        identityName,
+        sessionDisplayName,
+        role: agent.role,
+      },
+      helpharmaRoleConfig,
+    );
     const policy = execPolicyByAgentId.get(agent.id);
     const sandboxMode = resolveAgentSandboxMode(agent.id, input.configSnapshot);
     const resolvedExecSecurity = sessionExecSecurity ?? policy?.security;
@@ -270,6 +286,8 @@ export const deriveHydrateAgentFleetResult = (
       identityName,
       sessionDisplayName,
       role: typeof agent.role === "string" && agent.role.trim() ? agent.role.trim() : null,
+      helpharmaRole: helpharmaRoleResolution.role,
+      helpharmaRoleSource: helpharmaRoleResolution.source,
       sessionKey: buildAgentMainSessionKey(agent.id, mainKey),
       avatarSeed,
       avatarProfile,

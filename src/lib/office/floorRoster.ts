@@ -1,4 +1,5 @@
 import type { AgentStoreSeed } from "@/features/agents/state/store";
+import type { HelpharmaAgentRole } from "@/lib/helpharma/agent-roles";
 import {
   getOfficeFloor,
   OFFICE_FLOORS,
