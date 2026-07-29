@@ -16,7 +16,13 @@ import {
 } from "@/lib/cron/types";
 import type { GatewayClient, GatewayStatus } from "@/lib/gateway/GatewayClient";
 import { isGatewayDisconnectLikeError } from "@/lib/gateway/GatewayClient";
+import { resolveHelpharmaAgentRoleLabel } from "@/lib/helpharma/agent-role-display";
 
+const formatPlaybookAgentLabel = (agent: AgentState) => {
+  const name = agent.name || agent.agentId;
+  const roleLabel = resolveHelpharmaAgentRoleLabel(agent.helpharmaRole);
+  return roleLabel ? `${name} - ${roleLabel}` : name;
+};
 type TemplateDefinition = {
   id: string;
   name: string;
@@ -656,7 +662,7 @@ export function PlaybooksPanel({
                     <option value="">Select an agent</option>
                     {agents.map((agent) => (
                       <option key={agent.agentId} value={agent.agentId}>
-                        {agent.name || agent.agentId}
+                        {formatPlaybookAgentLabel(agent)}
                       </option>
                     ))}
                   </select>
@@ -777,7 +783,7 @@ export function PlaybooksPanel({
                           <option value="">Select an agent</option>
                           {agents.map((agent) => (
                             <option key={agent.agentId} value={agent.agentId}>
-                              {agent.name || agent.agentId}
+                              {formatPlaybookAgentLabel(agent)}
                             </option>
                           ))}
                         </select>
