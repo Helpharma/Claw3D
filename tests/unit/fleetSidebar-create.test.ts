@@ -144,4 +144,23 @@ describe("FleetSidebar new agent action", () => {
     expect(statusBadge).toHaveAttribute("data-status", "running");
     expect(statusBadge).toHaveClass("ui-badge-status-running");
   });
+
+  it("shows Helpharma role badges for orchestrator and workers", () => {
+    render(
+      createElement(FleetSidebar, {
+        agents: [
+          { ...createAgent(), agentId: "celinha", name: "Celinha", helpharmaRole: "orchestrator" },
+          { ...createAgent(), agentId: "worker-1", name: "Worker One", helpharmaRole: "worker" },
+        ],
+        selectedAgentId: "celinha",
+        filter: "all",
+        onFilterChange: vi.fn(),
+        onSelectAgent: vi.fn(),
+        onCreateAgent: vi.fn(),
+      })
+    );
+
+    expect(within(screen.getByTestId("fleet-agent-row-celinha")).getByText("Orchestrator")).toBeInTheDocument();
+    expect(within(screen.getByTestId("fleet-agent-row-worker-1")).getByText("Worker")).toBeInTheDocument();
+  });
 });

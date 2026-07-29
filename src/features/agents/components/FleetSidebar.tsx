@@ -7,6 +7,11 @@ import {
   resolveAgentStatusLabel,
 } from "./colorSemantics";
 import { EmptyStatePanel } from "./EmptyStatePanel";
+import {
+  resolveHelpharmaAgentRoleBadgeClass,
+  resolveHelpharmaAgentRoleLabel,
+  resolveHelpharmaAgentRowClass,
+} from "@/lib/helpharma/agent-role-display";
 
 type FleetSidebarProps = {
   agents: AgentState[];
@@ -114,6 +119,8 @@ export const FleetSidebar = ({
             {agents.map((agent) => {
               const selected = selectedAgentId === agent.agentId;
               const avatarSeed = agent.avatarSeed ?? agent.agentId;
+              const helpharmaRoleLabel = resolveHelpharmaAgentRoleLabel(agent.helpharmaRole);
+              const helpharmaRoleRowClass = resolveHelpharmaAgentRowClass(agent.helpharmaRole);
               return (
                 <button
                   key={agent.agentId}
@@ -131,7 +138,7 @@ export const FleetSidebar = ({
                   className={`group relative ui-card flex w-full items-center gap-3 overflow-hidden border px-3 py-3 text-left transition-colors ${
                     selected
                       ? "ui-card-selected"
-                      : "hover:bg-surface-2/45"
+                      : `hover:bg-surface-2/45 ${helpharmaRoleRowClass}`
                   }`}
                   onClick={() => onSelectAgent(agent.agentId)}
                 >
@@ -157,6 +164,11 @@ export const FleetSidebar = ({
                       >
                         {resolveAgentStatusLabel(agent.status)}
                       </span>
+                      {helpharmaRoleLabel ? (
+                        <span className={`ui-badge ${resolveHelpharmaAgentRoleBadgeClass(agent.helpharmaRole)}`}>
+                          {helpharmaRoleLabel}
+                        </span>
+                      ) : null}
                       {agent.awaitingUserInput ? (
                         <span className={`ui-badge ${NEEDS_APPROVAL_BADGE_CLASS}`} data-status="approval">
                           Needs approval
