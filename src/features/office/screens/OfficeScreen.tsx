@@ -3137,6 +3137,7 @@ export function OfficeScreen({
         name: agent.name || agent.agentId,
         latestPreview: agent.latestPreview,
         lastUserMessage: agent.lastUserMessage,
+        helpharmaRole: agent.helpharmaRole,
       })),
     [state.agents],
   );

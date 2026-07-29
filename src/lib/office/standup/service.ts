@@ -245,6 +245,7 @@ const normalizeAgentSnapshots = (agents: StandupAgentSnapshot[]): StandupAgentSn
       name: coerceText(agent.name) || coerceText(agent.agentId),
       latestPreview: coerceText(agent.latestPreview) || null,
       lastUserMessage: coerceText(agent.lastUserMessage) || null,
+      helpharmaRole: agent.helpharmaRole,
     }))
     .filter((agent) => agent.agentId);
   if (valid.length > 0) return valid;
@@ -338,6 +339,7 @@ export const buildStandupMeeting = async (params: {
     return {
       agentId: agent.agentId,
       agentName: agent.name,
+      helpharmaRole: agent.helpharmaRole,
       speech: buildSpeech(agent.name, currentTask, blockers),
       currentTask,
       blockers,

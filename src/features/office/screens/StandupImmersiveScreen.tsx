@@ -3,6 +3,7 @@
 import { ExternalLink, X } from "lucide-react";
 
 import type { StandupMeeting } from "@/lib/office/standup/types";
+import { resolveHelpharmaAgentRoleLabel } from "@/lib/helpharma/agent-role-display";
 
 const sourceTone = (ready: boolean, stale: boolean) => {
   if (!ready) return stale ? "text-amber-200 border-amber-400/25" : "text-rose-200 border-rose-400/25";
@@ -54,6 +55,7 @@ export function StandupImmersiveScreen({
           <div className="grid gap-4 xl:grid-cols-3">
             {meeting.cards.map((card) => {
               const isSpeaking = card.agentId === meeting.currentSpeakerAgentId;
+              const helpharmaRoleLabel = resolveHelpharmaAgentRoleLabel(card.helpharmaRole);
               return (
                 <section
                   key={card.agentId}
@@ -71,6 +73,11 @@ export function StandupImmersiveScreen({
                       <div className="mt-1 text-lg font-semibold text-white">
                         {card.agentName}
                       </div>
+                      {helpharmaRoleLabel ? (
+                        <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200/70">
+                          {helpharmaRoleLabel}
+                        </div>
+                      ) : null}
                     </div>
                     {isSpeaking ? (
                       <div className="rounded border border-cyan-400/30 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-100">

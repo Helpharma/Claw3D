@@ -1,3 +1,5 @@
+import type { HelpharmaAgentRole } from "@/lib/helpharma/agent-roles";
+
 export type StandupPhase = "scheduled" | "gathering" | "in_progress" | "complete";
 
 export type StandupSourceKind = "github" | "jira" | "manual";
@@ -9,6 +11,7 @@ export type StandupAgentSnapshot = {
   name: string;
   latestPreview?: string | null;
   lastUserMessage?: string | null;
+  helpharmaRole?: HelpharmaAgentRole;
 };
 
 export type StandupManualEntry = {
@@ -45,6 +48,7 @@ export type StandupSourceState = {
 export type StandupSummaryCard = {
   agentId: string;
   agentName: string;
+  helpharmaRole?: HelpharmaAgentRole;
   speech: string;
   currentTask: string;
   blockers: string[];
