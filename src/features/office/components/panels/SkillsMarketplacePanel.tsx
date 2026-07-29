@@ -15,10 +15,18 @@ import {
 } from "lucide-react";
 
 import type { OfficeSkillsMarketplaceController } from "@/features/office/hooks/useOfficeSkillsMarketplace";
+import type { AgentState } from "@/features/agents/state/store";
 import type { SkillMarketplaceCollectionId, SkillMarketplaceEntry } from "@/lib/skills/marketplace";
 import { buildSkillMarketplaceCollections } from "@/lib/skills/marketplace";
 import { buildAgentSkillsAllowlistSet, deriveAgentSkillsAccessMode } from "@/lib/skills/presentation";
+import { resolveHelpharmaAgentRoleLabel } from "@/lib/helpharma/agent-role-display";
 
+const formatMarketplaceAgentLabel = (agent: AgentState | null | undefined) => {
+  if (!agent) return "No agent selected";
+  const name = agent.name || agent.agentId;
+  const roleLabel = resolveHelpharmaAgentRoleLabel(agent.helpharmaRole);
+  return roleLabel ? `${name} - ${roleLabel}` : name;
+};
 type MarketplaceFilter = "all" | SkillMarketplaceCollectionId;
 
 const FILTER_LABELS: Record<MarketplaceFilter, string> = {
@@ -212,7 +220,7 @@ export function SkillsMarketplacePanel({
                 Agent context
               </div>
               <div className="mt-1 font-mono text-[11px] text-white/75">
-                {marketplace.selectedAgent?.name ?? "No agent selected"}
+                {formatMarketplaceAgentLabel(marketplace.selectedAgent)}
               </div>
             </div>
             <div className="font-mono text-[10px] text-white/35">
@@ -229,7 +237,7 @@ export function SkillsMarketplacePanel({
               {marketplace.agents.length === 0 ? <option value="">No agents available</option> : null}
               {marketplace.agents.map((agent) => (
                 <option key={agent.agentId} value={agent.agentId}>
-                  {agent.name}
+                  {formatMarketplaceAgentLabel(agent)}
                 </option>
               ))}
             </select>
