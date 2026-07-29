@@ -75,6 +75,7 @@ import {
   buildFloorRosterState,
   createFloorRosterCache,
 } from "@/lib/office/floorRoster";
+import { resolveHelpharmaAgentRoleLabel } from "@/lib/helpharma/agent-role-display";
 import {
   getOfficeFloor,
   listOfficeFloorsForProvider,
@@ -566,11 +567,13 @@ const getDeterministicItem = (id: string) => {
 };
 
 const mapAgentToOffice = (agent: AgentState): OfficeAgent => {
+  const subtitle = resolveHelpharmaAgentRoleLabel(agent.helpharmaRole) ?? agent.role ?? null;
   if (agent.status === "error") {
     return {
       id: agent.agentId,
       name: agent.name || "Unknown",
-      subtitle: agent.role ?? null,
+      subtitle,
+      helpharmaRole: agent.helpharmaRole,
       status: "error",
       color: stringToColor(agent.agentId),
       item: getDeterministicItem(agent.agentId),
@@ -581,7 +584,8 @@ const mapAgentToOffice = (agent: AgentState): OfficeAgent => {
   return {
     id: agent.agentId,
     name: agent.name || "Unknown",
-    subtitle: agent.role ?? null,
+    subtitle,
+    helpharmaRole: agent.helpharmaRole,
     status: isWorking ? "working" : "idle",
     color: stringToColor(agent.agentId),
     item: getDeterministicItem(agent.agentId),

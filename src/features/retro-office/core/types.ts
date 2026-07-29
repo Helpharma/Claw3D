@@ -1,10 +1,12 @@
 import type { AgentAvatarProfile } from "@/lib/avatars/profile";
+import type { HelpharmaAgentRole } from "@/lib/helpharma/agent-roles";
 import type { OfficeInteractionTargetId } from "@/lib/office/places";
 
 export type OfficeAgent = {
   id: string;
   name: string;
   subtitle?: string | null;
+  helpharmaRole?: HelpharmaAgentRole;
   status: "working" | "idle" | "error";
   color: string;
   item: string;
