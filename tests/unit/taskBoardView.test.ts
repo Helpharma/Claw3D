@@ -28,7 +28,7 @@ const createCard = (overrides: Partial<TaskBoardCard> = {}): TaskBoardCard => ({
   ...overrides,
 });
 
-const createAgent = (): AgentState => ({
+const createAgent = (overrides: Partial<AgentState> = {}): AgentState => ({
   agentId: "agent-1",
   name: "Agent One",
   sessionKey: "agent:agent-1:main",
@@ -61,6 +61,7 @@ const createAgent = (): AgentState => ({
   thinkingLevel: "medium",
   avatarSeed: "seed-1",
   avatarUrl: null,
+  ...overrides,
 });
 
 const createCronJob = (): CronJobSummary => ({
@@ -84,7 +85,7 @@ describe("TaskBoardView", () => {
     const onUpdateCard = vi.fn();
     const onDeleteCard = vi.fn();
     const onRefreshCronJobs = vi.fn();
-    const selectedCard = createCard();
+    const selectedCard = createCard({ assignedAgentId: "agent-1" });
 
     render(
       createElement(TaskBoardView, {
@@ -133,5 +134,38 @@ describe("TaskBoardView", () => {
     expect(onMoveCard).toHaveBeenCalledWith("task-1", "in_progress");
     expect(onUpdateCard).toHaveBeenCalledWith("task-1", { assignedAgentId: "agent-1" });
     expect(onDeleteCard).toHaveBeenCalledWith("task-1");
+  });
+
+  it("labels assigned Helpharma workers in task controls", () => {
+    const worker = createAgent({ helpharmaRole: "worker" });
+    const selectedCard = createCard({ assignedAgentId: worker.agentId });
+
+    render(
+      createElement(TaskBoardView, {
+        title: "Kanban",
+        subtitle: "Track tasks.",
+        agents: [worker],
+        cardsByStatus: {
+          todo: [selectedCard],
+          in_progress: [],
+          blocked: [],
+          review: [],
+          done: [],
+        },
+        selectedCard,
+        activeRuns: [],
+        cronJobs: [],
+        cronLoading: false,
+        cronError: null,
+        onCreateCard: vi.fn(),
+        onMoveCard: vi.fn(),
+        onSelectCard: vi.fn(),
+        onUpdateCard: vi.fn(),
+        onDeleteCard: vi.fn(),
+        onRefreshCronJobs: vi.fn(),
+      })
+    );
+
+    expect(screen.getAllByText("Agent One - Worker").length).toBeGreaterThan(0);
   });
 });

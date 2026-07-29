@@ -6,6 +6,7 @@ import { Plus, RefreshCw, Trash2 } from "lucide-react";
 import type { AgentState } from "@/features/agents/state/store";
 import type { CronJobSummary } from "@/lib/cron/types";
 import type { TaskBoardCard, TaskBoardStatus } from "@/features/office/tasks/types";
+import { resolveHelpharmaAgentRoleLabel } from "@/lib/helpharma/agent-role-display";
 
 const STATUS_LABELS: Record<TaskBoardStatus, string> = {
   todo: "Todo",
@@ -40,6 +41,12 @@ const stopAndGetCardId = (event: DragEvent<HTMLElement>) => {
   return event.dataTransfer.getData("text/task-card-id").trim();
 };
 
+const formatTaskAgentLabel = (agent: AgentState | undefined, agentId: string | null) => {
+  if (!agentId) return "Unassigned";
+  const name = agent?.name || agentId;
+  const roleLabel = resolveHelpharmaAgentRoleLabel(agent?.helpharmaRole);
+  return roleLabel ? `${name} - ${roleLabel}` : name;
+};
 export function TaskBoardView({
   title,
   subtitle,
@@ -88,6 +95,8 @@ export function TaskBoardView({
   onDeleteCard: (cardId: string) => void;
   onRefreshCronJobs: () => void;
 }) {
+  const agentById = new Map(agents.map((agent) => [agent.agentId, agent]));
+
   return (
     <section className="flex h-full min-h-0 flex-col bg-transparent text-white">
       <div className="border-b border-cyan-500/10 bg-[#070b11]/22 px-4 py-3 backdrop-blur-[1px]">
@@ -241,7 +250,7 @@ export function TaskBoardView({
                             </div>
                           ) : null}
                           <div className="mt-3 flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-white/38">
-                            <span>{card.assignedAgentId ?? "Unassigned"}</span>
+                            <span>{formatTaskAgentLabel(agentById.get(card.assignedAgentId ?? ""), card.assignedAgentId)}</span>
                             {card.runId ? <span>Run linked.</span> : null}
                             {card.playbookJobId ? <span>Playbook linked.</span> : null}
                           </div>
@@ -335,7 +344,7 @@ export function TaskBoardView({
                   <option value="">Unassigned</option>
                   {agents.map((agent) => (
                     <option key={agent.agentId} value={agent.agentId}>
-                      {agent.name || agent.agentId}
+                      {formatTaskAgentLabel(agent, agent.agentId)}
                     </option>
                   ))}
                 </select>
