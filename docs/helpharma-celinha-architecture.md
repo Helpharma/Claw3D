@@ -21,6 +21,16 @@ OPENCLAW_STATE_DIR=/data/.openclaw
 OPENCLAW_CONFIG_PATH=/data/.openclaw/openclaw.json
 ```
 
+Claw3D can also derive Helpharma-specific agent roles from optional runtime
+configuration:
+
+```env
+CELINHA_AGENT_ID=celinha-main
+CELINHA_AGENT_NAMES=Celinha
+HELPHARMA_WORKER_AGENT_IDS=agent-a,agent-b,agent-c,agent-d,agent-e,agent-f
+HELPHARMA_WORKER_AGENT_NAMES=Fiscal,Compras,Financeiro,Operacoes,Suporte,Comercial
+```
+
 Claw3D must treat that directory as runtime-owned state. It can read runtime
 state through supported gateway/API paths, but it should not create a competing
 source of truth for agents, sessions, approvals, or Telegram conversations.
