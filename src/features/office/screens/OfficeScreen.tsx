@@ -75,7 +75,10 @@ import {
   buildFloorRosterState,
   createFloorRosterCache,
 } from "@/lib/office/floorRoster";
-import { resolveHelpharmaAgentRoleLabel } from "@/lib/helpharma/agent-role-display";
+import {
+  resolveHelpharmaAgentRoleBadgeClass,
+  resolveHelpharmaAgentRoleLabel,
+} from "@/lib/helpharma/agent-role-display";
 import {
   getOfficeFloor,
   listOfficeFloorsForProvider,
@@ -686,6 +689,7 @@ type ChatRosterEntry = {
   name: string;
   kind: "local" | "remote";
   isRunning: boolean;
+  helpharmaRole?: OfficeAgent["helpharmaRole"];
 };
 
 const EMPTY_REMOTE_CHAT_SESSION: RemoteChatSessionState = {
@@ -4365,6 +4369,7 @@ export function OfficeScreen({
         name: agent.name || agent.agentId,
         kind: "local" as const,
         isRunning: agent.status === "running",
+        helpharmaRole: agent.helpharmaRole,
       })),
       ...remoteOfficeAgents.map((agent) => ({
         id: agent.id,
@@ -5442,6 +5447,7 @@ export function OfficeScreen({
                   <div className="flex flex-col items-center gap-2 px-1 py-2">
                     {chatRosterEntries.map((agent) => {
                       const isSelected = agent.id === selectedChatAgentId;
+                      const helpharmaRoleLabel = resolveHelpharmaAgentRoleLabel(agent.helpharmaRole);
                       return (
                         <button
                           key={agent.id}
@@ -5452,7 +5458,7 @@ export function OfficeScreen({
                               ? "border-cyan-400/45 bg-cyan-950/50 text-cyan-100"
                               : "border-white/10 bg-white/5 text-white/55 hover:border-white/20 hover:bg-white/10 hover:text-white/80"
                           }`}
-                          title={agent.name}
+                          title={helpharmaRoleLabel ? `${agent.name} - ${helpharmaRoleLabel}` : agent.name}
                         >
                           {agent.name.slice(0, 1).toUpperCase()}
                         </button>
@@ -5467,6 +5473,7 @@ export function OfficeScreen({
                   chatRosterEntries.map((agent) => {
                     const isSelected = agent.id === selectedChatAgentId;
                     const isRunning = agent.isRunning;
+                    const helpharmaRoleLabel = resolveHelpharmaAgentRoleLabel(agent.helpharmaRole);
                     return (
                       <button
                         key={agent.id}
@@ -5484,7 +5491,11 @@ export function OfficeScreen({
                         <span className="min-w-0 flex-1 truncate font-mono text-[11px]">
                           {agent.name}
                         </span>
-                        {agent.kind === "remote" ? (
+                        {helpharmaRoleLabel ? (
+                          <span className={`ui-badge shrink-0 ${resolveHelpharmaAgentRoleBadgeClass(agent.helpharmaRole)}`}>
+                            {helpharmaRoleLabel}
+                          </span>
+                        ) : agent.kind === "remote" ? (
                           <span className="shrink-0 font-mono text-[9px] uppercase tracking-[0.14em] text-cyan-300/60">
                             Remote
                           </span>
